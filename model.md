@@ -3,7 +3,8 @@
 ```mermaid
 erDiagram
     USER ||--o| TUTOR_PROFILE : "has"
-    USER ||--o{ LESSON : "participates"
+    USER ||--o{ LESSON : "books as student"
+    USER ||--o{ LESSON : "teaches as tutor"
     SUBJECT ||--o{ LESSON : "categorizes"
 
     USER {
