@@ -4,7 +4,8 @@
 erDiagram
     USER ||--o| TUTOR_PROFILE : "has"
     USER ||--o{ LESSON : "participates"
-    
+    SUBJECT ||--o{ LESSON : "categorizes"
+
     USER {
         int id PK
         string full_name
@@ -31,6 +32,7 @@ erDiagram
         int id PK
         int student_id FK
         int tutor_id FK
+        int subject_id FK
         datetime start_time
         int duration_minutes
         string status
