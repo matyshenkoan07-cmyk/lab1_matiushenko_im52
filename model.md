@@ -2,7 +2,7 @@
 
 ```mermaid
 erDiagram
-    USER ||--o{ TUTOR_PROFILE : "has"
+    USER ||--o| TUTOR_PROFILE : "has"
     USER ||--o{ LESSON : "participates"
     
     USER {
