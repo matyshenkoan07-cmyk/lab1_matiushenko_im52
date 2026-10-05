@@ -16,6 +16,7 @@ graph LR
     Student["Учень (Student)"]
     Tutor["Репетитор (Tutor)"]
     User["Користувач (User)"]
+    %% Audit Fix: External Actor Payment Gateway
     PaymentGateway["Платіжна система (Payment Gateway)"]:::external
 
     %% Generalization (Узагальнення)
@@ -37,6 +38,7 @@ graph LR
 
     %% Include та Extend
     UC2 .->|"«include»"| UC3
+    %% Audit Fix: Extend relationship for asynchronous payment
     UC4 .->|"«extend»"| UC2
 
     classDef external fill:#f9f,stroke:#333,stroke-width:2px;
