@@ -48,7 +48,7 @@ sequenceDiagram
     else Помилка оплати або тайм-аут
         PS->>BS: processPaymentCallback(booking_id, success=false)
         BS->>DB: updateLessonStatus(booking_id, status='Available')
-        DB-->>BS: StatusUpdated (true)
+        DB-->>BS: Статус оновлено (true)
         BS-->>UI: notifyPaymentFailed(booking_id)
         UI-->>Student: Відображення помилки та повернення слоту в розклад
     end
