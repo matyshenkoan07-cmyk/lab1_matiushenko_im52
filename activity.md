@@ -78,11 +78,11 @@ graph TD
     act_proc_pay --> act_send_callback
     act_send_callback --> act_recv_callback
 
-    %% Decision 2: Результат платежу
-    act_recv_callback --> dec_pay{"Оплата успішна?"}
+   %% Decision 2: Результат платежу та Тайм-аут
+    act_recv_callback --> dec_pay{"Оплата успішна чи тайм-аут?"}
 
-    %% Гілка Помилки оплати
-    dec_pay -- Ні --> act_set_avail
+    %% Гілка Помилки / Тайм-ауту
+    dec_pay -- Ні / Timeout --> act_set_avail
     act_set_avail --> act_db_avail
     act_db_avail --> act_show_fail
 
