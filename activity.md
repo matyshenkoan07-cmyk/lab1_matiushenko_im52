@@ -78,7 +78,7 @@ graph TD
     act_proc_pay --> act_send_callback
     act_send_callback --> act_recv_callback
 
-   %% Decision 2: Результат платежу та Тайм-аут
+    %% Decision 2: Результат платежу та Тайм-аут
     act_recv_callback --> dec_pay{"Оплата успішна чи тайм-аут?"}
 
     %% Гілка Помилки / Тайм-ауту
@@ -98,4 +98,7 @@ graph TD
     act_confirm_resp --> join_node
     act_get_notify --> join_node
     
+    %% Фінальне підключення успішного завершення
     join_node --> act_show_success
+    act_show_success --> act_see_confirm
+    act_see_confirm --> node_end_success
