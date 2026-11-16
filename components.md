@@ -2,24 +2,25 @@
 
 ```mermaid
 graph TD
-    subgraph TutorPlatform ["System: TutorPlatform"]
-        WebClient["WebClient (UI)"]
-        APIGateway["APIGateway"]
-        AuthService["AuthService"]
-        CatalogService["CatalogService"]
-        BookingService["BookingService"]
-        PaymentService["PaymentService"]
-        NotificationService["NotificationService"]
-        DataAccessLayer["DataAccessLayer"]
-        Database[("Database (PostgreSQL)")]
-
-        %% Помилка 1: зовнішні сервіси всередині межі системи
-        PaymentGateway["PaymentGateway (External)"]
-        NotificationProvider["NotificationProvider (External)"]
-        OAuthProvider["OAuthProvider (External)"]
+    subgraph TutorPlatform ["System Boundary: TutorPlatform"]
+        WebClient["«component» WebClient"]
+        APIGateway["«component» APIGateway"]
+        AuthService["«component» AuthService"]
+        CatalogService["«component» CatalogService"]
+        BookingService["«component» BookingService"]
+        PaymentService["«component» PaymentService"]
+        NotificationService["«component» NotificationService"]
+        DataAccessLayer["«component» DataAccessLayer"]
+        Database[("«database» PostgreSQL")]
     end
 
-    %% Помилка 2: порушення шарів (прямі звернення)
+    %% Зовнішні інтеграції поза межами системи
+    subgraph ExternalSystems ["External Integrations (Out of Boundary)"]
+        OAuthProvider["«external» OAuthProvider"]
+        PaymentGateway["«external» PaymentGateway"]
+        NotificationProvider["«external» NotificationProvider"]
+    end
+
     WebClient --> APIGateway
     WebClient --> CatalogService
 
