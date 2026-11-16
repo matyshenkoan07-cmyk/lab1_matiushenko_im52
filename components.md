@@ -14,17 +14,17 @@ graph TD
         Database[("«database» PostgreSQL")]
     end
 
-    %% Зовнішні інтеграції поза межами системи
     subgraph ExternalSystems ["External Integrations (Out of Boundary)"]
         OAuthProvider["«external» OAuthProvider"]
         PaymentGateway["«external» PaymentGateway"]
         NotificationProvider["«external» NotificationProvider"]
     end
 
+    %% Суворе дотримання шарів
     WebClient --> APIGateway
-    WebClient --> CatalogService
 
     APIGateway --> AuthService
+    APIGateway --> CatalogService
     APIGateway --> BookingService
 
     AuthService --> OAuthProvider
@@ -34,7 +34,7 @@ graph TD
 
     BookingService --> PaymentService
     BookingService --> NotificationService
-    BookingService --> Database
+    BookingService --> DataAccessLayer
 
     PaymentService --> PaymentGateway
     NotificationService --> NotificationProvider
