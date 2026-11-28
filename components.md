@@ -1,64 +1,43 @@
-# Компонентна діаграма системи (components.md)
+C4Component
+    title Component Diagram — TutorPlatform
 
-```mermaid
-graph TD
-    subgraph TutorPlatform ["System Boundary: TutorPlatform"]
-        WebClient["«component» WebClient"]
-        APIGateway["«component» APIGateway"]
+    Person(user, "Student / Tutor", "Користувач платформи")
 
-        %% Provided / Required інтерфейси сервісів
-        IAuthAPI(["«interface» IAuthAPI"])
-        ICatalogAPI(["«interface» ICatalogAPI"])
-        IBookingAPI(["«interface» IBookingAPI"])
-        IPaymentAPI(["«interface» IPaymentAPI"])
-        IPaymentWebhook(["«interface» IPaymentWebhook"])
-        INotificationSender(["«interface» INotificationSender"])
-        IDataRepository(["«interface» IDataRepository"])
+    System_Boundary(tutor_platform, "TutorPlatform") {
+        Component(web, "WebClient", "SPA / Frontend", "Клієнтський веб-інтерфейс")
+        Component(gateway, "APIGateway", "REST API", "Єдина точка входу, маршрутизація та перевірка токенів")
+        
+        Component(auth, "AuthService", "Module", "Реєстрація, автентифікація та керування сесіями")
+        Component(catalog, "CatalogService", "Module", "Пошук та фільтрація репетиторів і предметів")
+        Component(booking, "BookingService", "Module", "Бронювання слотів та керування життєвим циклом уроку")
+        Component(payment, "PaymentService", "Module", "Обробка платежів та прийом webhook-підтверджень")
+        Component(notification, "NotificationService", "Module", "Формування та відправка сповіщень")
+        
+        Component(dal, "DataAccessLayer", "Repository", "Інкапсуляція доступу до даних (IDataRepository)")
+        ComponentDb(db, "PostgreSQL", "Relational DB", "Зберігання сутностей Student, Tutor, Subject, Lesson")
+    }
 
-        AuthService["«component» AuthService"]
-        CatalogService["«component» CatalogService"]
-        BookingService["«component» BookingService"]
-        PaymentService["«component» PaymentService"]
-        NotificationService["«component» NotificationService"]
-        DataAccessLayer["«component» DataAccessLayer"]
-        Database[("«database» PostgreSQL")]
+    System_Ext(oauth, "OAuthProvider", "Зовнішній провайдер автентифікації (Google)")
+    System_Ext(pay_gw, "PaymentGateway", "Зовнішній платіжний шлюз")
+    System_Ext(notif_prov, "NotificationProvider", "Зовнішній сервіс Email / Push розсилок")
 
-        %% Вхідний шар
-        WebClient -. "required" .-> APIGateway
+    Rel(user, web, "Використовує", "HTTPS")
+    Rel(web, gateway, "Викликає API", "REST / JSON")
 
-        APIGateway -. "required" .-> IAuthAPI
-        APIGateway -. "required" .-> ICatalogAPI
-        APIGateway -. "required" .-> IBookingAPI
+    Rel(gateway, auth, "Використовує", "IAuthAPI")
+    Rel(gateway, catalog, "Використовує", "ICatalogAPI")
+    Rel(gateway, booking, "Використовує", "IBookingAPI")
 
-        IAuthAPI --- AuthService
-        ICatalogAPI --- CatalogService
-        IBookingAPI --- BookingService
+    Rel(booking, payment, "Ініціює оплату", "IPaymentAPI")
+    Rel(booking, notification, "Запитує сповіщення", "INotificationSender")
 
-        %% Взаємодія між бізнес-сервісами
-        BookingService -. "required" .-> IPaymentAPI
-        BookingService -. "required" .-> INotificationSender
+    Rel(auth, dal, "Читає/записує дані", "IDataRepository")
+    Rel(catalog, dal, "Читає дані", "IDataRepository")
+    Rel(booking, dal, "Читає/записує дані", "IDataRepository")
+    Rel(payment, dal, "Оновлює статус оплати", "IDataRepository")
+    Rel(dal, db, "SQL-запити", "TCP / JDBC")
 
-        IPaymentAPI --- PaymentService
-        IPaymentWebhook --- PaymentService
-        INotificationSender --- NotificationService
-
-        %% Доступ до даних через інтерфейс репозиторію
-        AuthService -. "required" .-> IDataRepository
-        CatalogService -. "required" .-> IDataRepository
-        BookingService -. "required" .-> IDataRepository
-
-        IDataRepository --- DataAccessLayer
-        DataAccessLayer --> Database
-    end
-
-    subgraph ExternalSystems ["External Integrations (Out of Boundary)"]
-        OAuthProvider["«external» OAuthProvider"]
-        PaymentGateway["«external» PaymentGateway"]
-        NotificationProvider["«external» NotificationProvider"]
-    end
-
-    %% Зовнішні інтеграції
-    AuthService -. "OAuth 2.0" .-> OAuthProvider
-    PaymentService -. "init payment" .-> PaymentGateway
-    PaymentGateway -. "required (webhook)" .-> IPaymentWebhook
-    NotificationService -. "push/email" .-> NotificationProvider
+    Rel(auth, oauth, "Автентифікує через", "OAuth 2.0 / OIDC")
+    Rel(payment, pay_gw, "Створює платіж", "HTTPS / REST")
+    Rel(pay_gw, payment, "Надсилає статус оплати", "Webhook / IPaymentWebhook")
+    Rel(notification, notif_prov, "Відправляє повідомлення", "SMTP / Push API")
